@@ -2,7 +2,8 @@
 
 ## Pre-requisites
 1. Docker (20.10.9+) and Docker Compose (2.0.1+)
-2. GNU Make
+2. GNU Make `sudo apt install make`
+3. [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
 
 ## Installation
 
