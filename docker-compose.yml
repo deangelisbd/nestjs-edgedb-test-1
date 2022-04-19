@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  nestjs:
+    container_name: ${PROJECT_NAME}_nestjs
+    image: nestjs
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:debug
+    ports:
+      - ${APPLICATION_PORT}:${APPLICATION_PORT}
+      - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules
+    restart: unless-stopped
+  edgedb:
+    container_name: ${PROJECT_NAME}_edgedb
+    image: edgedb/edgedb
+    hostname: edgedb
+    environment:
+      EDGEDB_SERVER_SECURITY: insecure_dev_mode
+    volumes:
+      - "./dbschema:/dbschema"
+      - "./edgedb.toml:/edgedb.toml"
+      - "./credentials:/root/.config/edgedb/credentials"
+    ports:
+      - "5656:5656"    
+  # prod:
+  #   container_name: ${PROJECT_NAME}_nestjs-prod
+  #   image: nestjs-api-prod:1.0.0
+  #   build:
+  #     context: .
+  #     target: production
+  #     dockerfile: ./Dockerfile
+  #   command: npm run start:prod
+  #   ports:
+  #     - ${APPLICATION_PORT}:${APPLICATION_PORT}
+  #     - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
+  #   networks:
+  #     - nesjs-network
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
+  #   restart: unless-stopped
