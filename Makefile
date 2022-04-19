@@ -16,13 +16,13 @@ endif
 .PHONY: up
 up:
 	@echo "Starting up container for $(PROJECT_NAME)"
-	docker-compose up
+	docker compose up
 
 ## stop	:	Stop containers.
 .PHONY: stop
 stop:
 	@echo "Stopping containers for $(PROJECT_NAME)..."
-	@docker-compose stop
+	@docker compose stop
 
 ## prune	:	Remove containers and their volumes.
 ##		You can optionally pass an argument with the service name to prune single container
@@ -31,7 +31,7 @@ stop:
 .PHONY: prune
 prune:
 	@echo "Removing containers for $(PROJECT_NAME)..."
-	@docker-compose down -v $(filter-out $@,$(MAKECMDGOALS))
+	@docker compose down -v $(filter-out $@,$(MAKECMDGOALS))
 
 ## ps	:	List running containers.
 .PHONY: ps
@@ -50,7 +50,7 @@ shell:
 ##		logs nginx php	: View `nginx` and `php` containers logs.
 .PHONY: logs
 logs:
-	@docker-compose logs -f $(filter-out $@,$(MAKECMDGOALS))
+	@docker compose logs -f $(filter-out $@,$(MAKECMDGOALS))
 
 # https://stackoverflow.com/a/6273809/1826109
 %:

@@ -14,7 +14,6 @@ services:
       - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
     volumes:
       - .:/usr/src/app
-      - ./node_modules:/usr/src/app/node_modules
     restart: unless-stopped
   edgedb:
     container_name: ${PROJECT_NAME}_edgedb
