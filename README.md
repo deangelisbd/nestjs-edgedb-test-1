@@ -8,19 +8,19 @@
 
 ## Installation
 
-The `node_modules` directory created by npm causes some tricky Docker environments, since it is monitored for changes
-both by the NodeJS dev environment, as well as Docker (as defined in docker-compose.yml) for 2-way volume binding.
-It is further complicated by the need for the directory on the host, for proper compilation of TypeScript, as well as
-the container. The easiest solution is to run `npm install` on the host environment (local environment, not a docker container
-shell) so that the node_modules directory is present before bringing up the containers. The included `.dockerignore`
-file then tells the Docker container to ignore it
-```bash
-$ npm install
-```
-
 Start up the NestJS and EdgeDB docker containers
 ```bash
 $ make up
+```
+
+Start the NestJS server
+```bash
+$ make start
+```
+
+To stop the NestJS server, you need to manually stop the docker container
+```bash
+$ make stop
 ```
 
 Add data to DB if not already populated. In a new shell:

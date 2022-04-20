@@ -2,15 +2,17 @@ FROM node:17.9-alpine3.14
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+CMD tail -f /dev/null
 
-RUN npm install glob rimraf
+# COPY package*.json ./
 
-RUN npm install --include=dev
+# RUN npm install glob rimraf
 
-COPY . .
+# RUN npm install --include=dev
 
-RUN npm run build
+# COPY . .
+
+# RUN npm run build
 
 # FROM node:17.9-alpine3.14 as production
 

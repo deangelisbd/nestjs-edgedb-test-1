@@ -7,7 +7,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    command: npm run start:debug
     depends_on:
       - edgedb
     ports:

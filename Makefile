@@ -18,6 +18,13 @@ up:
 	@echo "Starting up container for $(PROJECT_NAME)"
 	docker compose up
 
+## start	:	Start up containers.
+.PHONY: start
+start:
+	@echo "Starting up container for $(PROJECT_NAME)"
+	docker exec --user root `docker ps -aqf "name=$(PROJECT_NAME)_nestjs"` chmod 777 ./.docker/entrypointDev.sh
+	docker exec $(shell docker ps -aqf "name=$(PROJECT_NAME)_nestjs") ./.docker/entrypointDev.sh
+
 ## stop	:	Stop containers.
 .PHONY: stop
 stop:
