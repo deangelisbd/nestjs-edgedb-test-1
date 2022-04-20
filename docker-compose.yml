@@ -9,11 +9,14 @@ services:
       target: development
       dockerfile: ./Dockerfile
     command: npm run start:debug
+    depends_on:
+      - edgedb
     ports:
       - ${APPLICATION_PORT}:${APPLICATION_PORT}
       - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     restart: unless-stopped
   edgedb:
     container_name: ${PROJECT_NAME}_edgedb
