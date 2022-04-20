@@ -44,6 +44,13 @@ ps:
 shell:
 	docker exec -ti -e COLUMNS=$(shell tput cols) -e LINES=$(shell tput lines) $(shell docker ps -aqf "name=$(PROJECT_NAME)_$(or $(filter-out $@,$(MAKECMDGOALS)), php)") sh
 
+## npm	:	Executes `npm` command in a specified root directory .
+##		To use "--flag" arguments include them in quotation marks.
+##		For example: make npm "install --save-dev @types/react @types/react-dom"
+.PHONY: npm
+npm:
+	docker exec $(shell docker ps -aqf "name=$(PROJECT_NAME)_nestjs") npm $(filter-out $@,$(MAKECMDGOALS))
+
 ## logs	:	View containers logs.
 ##		You can optinally pass an argument with the service name to limit logs
 ##		logs php	: View `php` container logs.

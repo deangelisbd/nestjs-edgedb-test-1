@@ -3,10 +3,9 @@ version: '3.8'
 services:
   nestjs:
     container_name: ${PROJECT_NAME}_nestjs
-    image: nestjs
+    image: nestjs/nestjs
     build:
       context: .
-      target: development
       dockerfile: ./Dockerfile
     command: npm run start:debug
     depends_on:
@@ -15,9 +14,7 @@ services:
       - ${APPLICATION_PORT}:${APPLICATION_PORT}
       - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: unless-stopped
+      - ./:/usr/src/app/
   edgedb:
     container_name: ${PROJECT_NAME}_edgedb
     image: edgedb/edgedb

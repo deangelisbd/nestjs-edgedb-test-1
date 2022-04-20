@@ -1,12 +1,12 @@
-FROM node:17.9-alpine3.14 AS development
+FROM node:17.9-alpine3.14
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --include=dev
-
 RUN npm install glob rimraf
+
+RUN npm install --include=dev
 
 COPY . .
 

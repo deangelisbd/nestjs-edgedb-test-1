@@ -3,9 +3,20 @@
 ## Pre-requisites
 1. Docker (20.10.9+) and Docker Compose (2.0.1+)
 2. GNU Make `sudo apt install make`
-3. [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
+3. [npm](https://www.freecodecamp.org/news/how-to-install-node-js-on-ubuntu-and-update-npm-to-the-latest-version/)
+4. [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
 
 ## Installation
+
+The `node_modules` directory created by npm causes some tricky Docker environments, since it is monitored for changes
+both by the NodeJS dev environment, as well as Docker (as defined in docker-compose.yml) for 2-way volume binding.
+It is further complicated by the need for the directory on the host, for proper compilation of TypeScript, as well as
+the container. The easiest solution is to run `npm install` on the host environment (local environment, not a docker container
+shell) so that the node_modules directory is present before bringing up the containers. The included `.dockerignore`
+file then tells the Docker container to ignore it
+```bash
+$ npm install
+```
 
 Start up the NestJS and EdgeDB docker containers
 ```bash
