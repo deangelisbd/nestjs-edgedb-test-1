@@ -2,7 +2,7 @@ include .env
 
 default: up
 
-SERVICE_nestjs=./.docker/startNestJSServer.sh
+SERVICE_nestjs=/usr/src/startNestJSServer.sh
 
 ## help	:	Print commands help.
 .PHONY: help

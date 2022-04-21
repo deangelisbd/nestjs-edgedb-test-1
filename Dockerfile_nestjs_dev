@@ -2,9 +2,10 @@ FROM node:17.9-alpine3.14
 
 WORKDIR /usr/src/app
 
+COPY .docker/startNestJSServer.sh /usr/src/startNestJSServer.sh
+
 CMD tail -f /dev/null
 
-# COPY package*.json ./
 
 # RUN npm install glob rimraf
 

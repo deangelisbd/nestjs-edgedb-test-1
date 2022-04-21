@@ -6,14 +6,14 @@ services:
     image: nestjs/nestjs
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile_nestjs_dev
     depends_on:
       - edgedb
     ports:
       - ${APPLICATION_PORT}:${APPLICATION_PORT}
       - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
     volumes:
-      - ./:/usr/src/app/
+      - ./server:/usr/src/app/
   edgedb:
     container_name: ${PROJECT_NAME}_edgedb
     image: edgedb/edgedb
@@ -21,9 +21,9 @@ services:
     environment:
       EDGEDB_SERVER_SECURITY: insecure_dev_mode
     volumes:
-      - "./dbschema:/dbschema"
-      - "./edgedb.toml:/edgedb.toml"
-      - "./credentials:/root/.config/edgedb/credentials"
+      - "./server/dbschema:/dbschema"
+      - "./server/edgedb.toml:/edgedb.toml"
+      - "./server/credentials:/root/.config/edgedb/credentials"
     ports:
       - "5656:5656"    
   # prod:
