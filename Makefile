@@ -3,6 +3,7 @@ include .env
 default: up
 
 SERVICE_nestjs=/usr/src/startNestJSServer.sh
+SERVICE_react=/usr/src/startReactServer.sh
 
 ## help	:	Print commands help.
 .PHONY: help

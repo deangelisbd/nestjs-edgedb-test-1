@@ -10,8 +10,8 @@ services:
     depends_on:
       - edgedb
     ports:
-      - ${APPLICATION_PORT}:${APPLICATION_PORT}
-      - ${DEBUGGING_PORT}:${DEBUGGING_PORT}
+      - ${NESTJS_APPLICATION_PORT}:${NESTJS_APPLICATION_PORT}
+      - ${NESTJS_DEBUGGING_PORT}:${NESTJS_DEBUGGING_PORT}
     volumes:
       - ./server:/usr/src/app/
   edgedb:
@@ -26,6 +26,20 @@ services:
       - "./server/credentials:/root/.config/edgedb/credentials"
     ports:
       - "5656:5656"    
+  react:
+    container_name: ${PROJECT_NAME}_react
+    image: react/react
+    build:
+      context: .
+      dockerfile: ./Dockerfile_react_dev
+    environment:
+      - PORT=${REACT_PORT}
+    depends_on:
+      - nestjs
+    ports:
+      - ${REACT_PORT}:${REACT_PORT}
+    volumes:
+      - ./client:/usr/src/app/
   # prod:
   #   container_name: ${PROJECT_NAME}_nestjs-prod
   #   image: nestjs-api-prod:1.0.0

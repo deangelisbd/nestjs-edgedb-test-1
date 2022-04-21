@@ -1,4 +1,4 @@
-# NestJS + EdgeDB + Docker
+# NestJS + EdgeDB + React + Docker
 
 ## Pre-requisites
 1. Docker (20.10.9+) and Docker Compose (2.0.1+)
@@ -7,18 +7,18 @@
 
 ## Installation
 
-0. Run the following to clone the repo. Note that initially, the ts files may show errors since the `node_modules` directory hasn't yet been populated. This will be done after starting the docker containers.
+0. Run the following to clone the repo. Note that initially, the ts files may show errors since the `node_modules` directories haven't yet been populated.
 
     ```bash
     git clone git@github.com:deangelisbd/nestjs-edgedb-test-1
     ```
 
-1. Start up the NestJS and EdgeDB docker containers
+1. Start up the NestJS and EdgeDB docker containers (server) and the React docker container (client)
 
     ```bash
     $ make up
     ```
-    You may see <span style="color:red">⠿ nestjs Error</span> at first, but you can ignore. Additionally, in the EdgeDB logs,  you may see errors from the EdgeDB container such as `Exception occurred: the database system is shutting down`, but these too can be ignored.
+    You may see <span style="color:red">⠿ react Error</span> or <span style="color:red">⠿ nestjs Error</span> at first, but you can ignore. Additionally, in the EdgeDB logs,  you may see errors from the EdgeDB container such as `Exception occurred: the database system is shutting down`, but these too can be ignored.
 
 2. Start the NestJS server
 
@@ -27,19 +27,26 @@
     ```
     Note that in a new container, this step takes several seconds up to a minute the first time. An indicator that the server is up and running is the creation of the `node_modules` and `dist` directories. This is where the `npm install` scripts run on the container place all the dependency modules. There may be some logging to the console after running this, but you can ignore and get access back to the prompt by starting to type again.
 
-3. To view the nestjs logs in order to debug errors use
+3. Start the React development environment
 
     ```bash
-    $ make logs nestjs
+    $ make start react
+    ```
+    Note that in a new container, this step takes several seconds up to a minute the first time.
+
+4. To view the NestJS or React or EdgeDB logs in order to debug errors use
+
+    ```bash
+    $ make logs [ nestjs | react | edgedb ]
     ```
 
-4. To stop the NestJS and EdgeDB containers
+5. To stop all the containers
 
     ```bash
     $ make stop
     ```
 
-5.  Add data to DB if not already populated. In a new shell:
+6.  Add data to DB if not already populated. In a new shell:
     ```bash
     $ edgedb --dsn=edgedb://edgedb@localhost:5656/edgedb --tls-security=insecure
     ```
@@ -85,11 +92,12 @@
     edgedb> insert Movie { title := "Dune" };
     ```
 
-6. Now to go to http://localhost:3000/ and you should see (if you performed the example commands in the previous step):
+6. Now to go to http://localhost:4000/ and you should see (if you performed the example commands in the previous step):
 
     
     [{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
 
+    Also see the main React page at http://localhost:3000/
 
 
 # Following is standard NestJS info
