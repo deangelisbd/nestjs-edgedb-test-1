@@ -3,79 +3,94 @@
 ## Pre-requisites
 1. Docker (20.10.9+) and Docker Compose (2.0.1+)
 2. GNU Make `sudo apt install make`
-3. [npm](https://www.freecodecamp.org/news/how-to-install-node-js-on-ubuntu-and-update-npm-to-the-latest-version/)
-4. [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
+3. [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
 
 ## Installation
 
-Start up the NestJS and EdgeDB docker containers
-```bash
-$ make up
-```
+0. Run the following to clone the repo. Note that initially, the ts files may show errors since the `node_modules` directory hasn't yet been populated. This will be done after starting the docker containers.
 
-Start the NestJS server
-```bash
-$ make start
-```
+    ```bash
+    git clone git@github.com:deangelisbd/nestjs-edgedb-test-1
+    ```
 
-To stop the NestJS server, you need to manually stop the docker container
-```bash
-$ make stop
-```
+1. Start up the NestJS and EdgeDB docker containers
 
-Add data to DB if not already populated. In a new shell:
-```bash
-$ edgedb --dsn=edgedb://edgedb@localhost:5656/edgedb --tls-security=insecure
-edgedb> insert Person {
-  first_name := 'Denis',
-  last_name := 'Villeneuve',
-};
-{default::Person {id: <person-id>}}
-edgedb> with director_id := <uuid>$director_id
-insert Movie {
-  title := 'Blade Runnr 2049',
-  year := 2017,
-  director := (
-    select Person
-    filter .id = director_id
-  ),
-  actors := {
-    (insert Person {
-      first_name := 'Harrison',
-      last_name := 'Ford',
-    }),
-    (insert Person {
-      first_name := 'Ana',
-      last_name := 'de Armas',
-    }),
-  }
-};
-Parameter <uuid>$director_id: # Enter <person-id> From previous query
-edgedb> update Movie
-filter .title = 'Blade Runnr 2049'
-set {
-  title := "Blade Runner 2049",
-  actors += (
-    insert Person {
-      first_name := "Ryan",
-      last_name := "Gosling"
-    }
-  )
-};
-edgedb> insert Movie { title := "Dune" };
-```
-Now to go to http://localhost:3000/ and you should see:
+    ```bash
+    $ make up
+    ```
+    You may see <span style="color:red">⠿ nestjs Error</span> at first, but you can ignore. Additionally, in the EdgeDB logs,  you may see errors from the EdgeDB container such as `Exception occurred: the database system is shutting down`, but these too can be ignored.
 
-```
-[{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
-```
+2. Start the NestJS server
 
-Other things you can do
-```bash
-$ make shell edgedb
-$ make shell nestjs
-$ make stop
-```
+    ```bash
+    $ make start nestjs
+    ```
+    Note that in a new container, this step takes several seconds up to a minute the first time. An indicator that the server is up and running is the creation of the `node_modules` and `dist` directories. This is where the `npm install` scripts run on the container place all the dependency modules. There may be some logging to the console after running this, but you can ignore and get access back to the prompt by starting to type again.
+
+3. To view the nestjs logs in order to debug errors use
+
+    ```bash
+    $ make logs nestjs
+    ```
+
+4. To stop the NestJS and EdgeDB containers
+
+    ```bash
+    $ make stop
+    ```
+
+5.  Add data to DB if not already populated. In a new shell:
+    ```bash
+    $ edgedb --dsn=edgedb://edgedb@localhost:5656/edgedb --tls-security=insecure
+    ```
+
+    Then in the edgedb CLI, do stuff like this:
+    ```bash
+    edgedb> insert Person {
+      first_name := 'Denis',
+      last_name := 'Villeneuve',
+    };
+    {default::Person {id: <person-id>}}
+    edgedb> with director_id := <uuid>$director_id
+    insert Movie {
+      title := 'Blade Runnr 2049',
+      year := 2017,
+      director := (
+        select Person
+        filter .id = director_id
+      ),
+      actors := {
+        (insert Person {
+          first_name := 'Harrison',
+          last_name := 'Ford',
+        }),
+        (insert Person {
+          first_name := 'Ana',
+          last_name := 'de Armas',
+        }),
+      }
+    };
+    Parameter <uuid>$director_id: # Enter <person-id> From previous query
+    edgedb> update Movie
+    filter .title = 'Blade Runnr 2049'
+    set {
+      title := "Blade Runner 2049",
+      actors += (
+        insert Person {
+          first_name := "Ryan",
+          last_name := "Gosling"
+        }
+      )
+    };
+    edgedb> insert Movie { title := "Dune" };
+    ```
+
+6. Now to go to http://localhost:3000/ and you should see (if you performed the example commands in the previous step):
+
+    
+    [{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
+
+
 
 # Following is standard NestJS info
 

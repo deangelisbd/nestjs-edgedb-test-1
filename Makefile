@@ -2,6 +2,8 @@ include .env
 
 default: up
 
+SERVICE_nestjs=./.docker/startNestJSServer.sh
+
 ## help	:	Print commands help.
 .PHONY: help
 ifneq (,$(wildcard docker.mk))
@@ -16,14 +18,15 @@ endif
 .PHONY: up
 up:
 	@echo "Starting up container for $(PROJECT_NAME)"
-	docker compose up
+	docker compose up -d --remove-orphans
 
-## start	:	Start up containers.
+## start	:	Start processes (must be defined in variable SERVICE_param where param comes after start)
 .PHONY: start
 start:
-	@echo "Starting up container for $(PROJECT_NAME)"
-	docker exec --user root `docker ps -aqf "name=$(PROJECT_NAME)_nestjs"` chmod 777 ./.docker/entrypointDev.sh
-	docker exec $(shell docker ps -aqf "name=$(PROJECT_NAME)_nestjs") ./.docker/entrypointDev.sh
+	@echo "Starting up services for $(filter-out $@,$(MAKECMDGOALS))"
+	$(eval SERVICE=SERVICE_$(filter-out $@,$(MAKECMDGOALS)))
+	docker exec --user root `docker ps -aqf "name=$(PROJECT_NAME)_$(filter-out $@,$(MAKECMDGOALS))"` chmod 777 $($(SERVICE))
+	docker exec `docker ps -aqf "name=$(PROJECT_NAME)_$(filter-out $@,$(MAKECMDGOALS))"` $($(SERVICE)) &
 
 ## stop	:	Stop containers.
 .PHONY: stop
