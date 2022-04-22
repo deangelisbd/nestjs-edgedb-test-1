@@ -36,13 +36,10 @@ stop:
 	@docker compose stop
 
 ## prune	:	Remove containers and their volumes.
-##		You can optionally pass an argument with the service name to prune single container
-##		prune mariadb	: Prune `mariadb` container and remove its volumes.
-##		prune mariadb solr	: Prune `mariadb` and `solr` containers and remove their volumes.
 .PHONY: prune
 prune:
 	@echo "Removing containers for $(PROJECT_NAME)..."
-	@docker compose down -v $(filter-out $@,$(MAKECMDGOALS))
+	@docker compose down -v
 
 ## ps	:	List running containers.
 .PHONY: ps
@@ -55,17 +52,18 @@ ps:
 shell:
 	docker exec -ti -e COLUMNS=$(shell tput cols) -e LINES=$(shell tput lines) $(shell docker ps -aqf "name=$(PROJECT_NAME)_$(or $(filter-out $@,$(MAKECMDGOALS)), php)") sh
 
-## npm	:	Executes `npm` command in a specified root directory .
-##		To use "--flag" arguments include them in quotation marks.
-##		For example: make npm "install --save-dev @types/react @types/react-dom"
-.PHONY: npm
-npm:
-	docker exec $(shell docker ps -aqf "name=$(PROJECT_NAME)_nestjs") npm $(filter-out $@,$(MAKECMDGOALS))
+## exec	:	Executes shell commands on a specified container in the working directory
+##		For example: make exec nestjs "npm install --save-dev @some/package"
+
+.PHONY: exec
+exec:
+	$(eval SERVICE=$(word 2,$(MAKECMDGOALS)))
+	docker exec $(shell docker ps -aqf "name=$(PROJECT_NAME)_$(SERVICE)") $(filter-out $(SERVICE),$(filter-out $@,$(MAKECMDGOALS)))
 
 ## logs	:	View containers logs.
 ##		You can optinally pass an argument with the service name to limit logs
-##		logs php	: View `php` container logs.
-##		logs nginx php	: View `nginx` and `php` containers logs.
+##		logs nestjs	: View `nestjs` container logs.
+##		logs nestjs react	: View `nestjs` and `react` containers logs.
 .PHONY: logs
 logs:
 	@docker compose logs -f $(filter-out $@,$(MAKECMDGOALS))
