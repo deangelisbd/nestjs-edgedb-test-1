@@ -13,6 +13,7 @@ services:
       - EDGE_USER=${EDGE_USER}
       - EDGE_HOST=${EDGE_HOST}
       - EDGE_DB=${EDGE_DB}
+      - ALLOWED_CORS_SUBDOMAINS=${NESTJS_ALLOWED_CORS_SUBDOMAINS}
     depends_on:
       - edgedb
     ports:
@@ -21,7 +22,7 @@ services:
     volumes:
       - ./server:/usr/src/app/
     labels:
-      - traefik.http.routers.nestjs.rule=Host(`nestjs.docker.localhost`)
+      - traefik.http.routers.nestjs.rule=Host(`${NESTJS_HOST}`)
       - traefik.http.services.nestjs.loadbalancer.server.port=${NESTJS_APPLICATION_PORT}
   edgedb:
     container_name: ${PROJECT_NAME}_edgedb
@@ -43,6 +44,8 @@ services:
       dockerfile: ./Dockerfile_react_dev
     environment:
       - PORT=${REACT_PORT}
+      - REACT_APP_NESTJS_BASE_URL=${NESTJS_HOST_PROTOCOL}://${NESTJS_HOST}
+      - REACT_APP_NESTJS_EDGEQL_QUERY_ENDPOINT=${NESTJS_EDGEQL_QUERY_ENDPOINT}
     depends_on:
       - nestjs
     ports:
@@ -50,7 +53,7 @@ services:
     volumes:
       - ./client:/usr/src/app/
     labels:
-      - traefik.http.routers.react.rule=Host(`react.docker.localhost`)
+      - traefik.http.routers.react.rule=Host(`${REACT_HOST}`)
       - traefik.http.services.react.loadbalancer.server.port=${REACT_PORT}
   reverse-proxy:
     image: traefik:v2.6

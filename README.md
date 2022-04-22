@@ -1,9 +1,19 @@
-# NestJS + EdgeDB + React + Docker
+# React → NestJS → EdgeDB in Docker Development Containers
+
+Minimum asset boilerplate for integrating several technologies together into a functional development environment. The installation instructions below will result in the following:
+
+1. An EdgeDB server running in the `edgedb` container
+2. A NextJS server (in hot reload mode) running in the `nestjs` container, configured to connect via http to the EdgeDB server, and exposing various REST endpoints through the http://nestjs.docker.localhost url.
+3. A React hot reload development environment running in the `react` container, configured to connect via http to the NextJS REST endpoints, and exposing a sample web app running at http://react.docker.localhost, which can be used to execute arbitrary EdgeQL queries as well as the query the results.
+
+A fourth Docker container, a `reverse-proxy` container, is also employed to ensure urls that satisfy browser CORS requirements.
+
+Note that this has only been tested on Ubuntu 18.0.4.
 
 ## Pre-requisites
 1. Docker (20.10.9+) and Docker Compose (2.0.1+)
 2. GNU Make `sudo apt install make`
-3. [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
+3. (Optional) [EdgeDB CLI](https://www.edgedb.com/install#linux-debianubuntults)
 
 ## Installation
 
@@ -46,18 +56,26 @@
     $ make stop
     ```
 
-6.  Add data to DB if not already populated. In a new shell:
+6.  Add data to DB if not already populated.
+    If you have the EdgeDB CLI installed locally, then run:
     ```bash
     $ edgedb --dsn=edgedb://edgedb@localhost:5656/edgedb --tls-security=insecure
     ```
 
-    Then in the edgedb CLI, do stuff like this:
+    Otherwise, go into the EdgeDB docker container shell and enter the EdgeDB CLI installed there:
+    ```bash
+    $ make shell edgedb
+    $ edgedb -I local_dev
+    ```
+
+    Then in the edgedb CLI, do stuff like this (when copying and pasting, ignore the `edgedb>` prompts and replies):
     ```bash
     edgedb> insert Person {
       first_name := 'Denis',
       last_name := 'Villeneuve',
     };
     {default::Person {id: <person-id>}}
+
     edgedb> with director_id := <uuid>$director_id
     insert Movie {
       title := 'Blade Runnr 2049',
@@ -77,7 +95,9 @@
         }),
       }
     };
-    Parameter <uuid>$director_id: # Enter <person-id> From previous query
+    Parameter <uuid>$director_id: # Enter <person-id> From previous query at prompt here
+    {default::Movie {id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}
+
     edgedb> update Movie
     filter .title = 'Blade Runnr 2049'
     set {
@@ -89,15 +109,29 @@
         }
       )
     };
+    {default::Movie {id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}
+
     edgedb> insert Movie { title := "Dune" };
+    {default::Movie {id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}
     ```
 
-6. Now to go to http://nestjs.docker.localhost and you should see (if you performed the example commands in the previous step):
+    To exit the EdgeDB CLI, enter:
 
+    ```bash
+    edgedb> \exit
+    ```
+
+6. Now to go to http://react.docker.localhost. In the field that reads "Enter EdgeQL", enter the query:
+
+    ```
+    select Movie { title, year };
+    ```
+
+    And then press the "Execute" button. You should see the JSON result appear below the query:
     
+    ```
     [{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
-
-    Also see the main React page at http://react.docker.localhost
+    ```
 
 
 # Following is standard NestJS info

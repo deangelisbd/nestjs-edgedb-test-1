@@ -7,11 +7,11 @@ export class AppController {
 
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  public async getHello(@Res() res:Response) {
-    let result:string = null;
-    await this.appService.getHello().then((value) => {
-      res.send(JSON.stringify(value))
+  @Get('/edge')
+  public async edgeQuery(@Req() req:Request, @Res() res:Response) {
+    const query:string = req.query.query.toString()
+    await this.appService.edgeQL(query).then((value) => {
+      res.json(value)
     })
   }    
 }
