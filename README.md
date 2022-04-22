@@ -92,12 +92,12 @@
     edgedb> insert Movie { title := "Dune" };
     ```
 
-6. Now to go to http://localhost:4000/ and you should see (if you performed the example commands in the previous step):
+6. Now to go to http://nestjs.docker.localhost and you should see (if you performed the example commands in the previous step):
 
     
     [{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
 
-    Also see the main React page at http://localhost:3000/
+    Also see the main React page at http://react.docker.localhost
 
 
 # Following is standard NestJS info
