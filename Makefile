@@ -5,6 +5,29 @@ default: up
 SERVICE_nestjs=/usr/src/startNestJSServer.sh
 SERVICE_react=/usr/src/startReactServer.sh
 
+# define standard colors
+ifneq (,$(findstring xterm,${TERM}))
+	BLACK        := $(shell tput -Txterm setaf 0)
+	RED          := $(shell tput -Txterm setaf 1)
+	GREEN        := $(shell tput -Txterm setaf 2)
+	YELLOW       := $(shell tput -Txterm setaf 3)
+	LIGHTPURPLE  := $(shell tput -Txterm setaf 4)
+	PURPLE       := $(shell tput -Txterm setaf 5)
+	BLUE         := $(shell tput -Txterm setaf 6)
+	WHITE        := $(shell tput -Txterm setaf 7)
+	RESET := $(shell tput -Txterm sgr0)
+else
+	BLACK        := ""
+	RED          := ""
+	GREEN        := ""
+	YELLOW       := ""
+	LIGHTPURPLE  := ""
+	PURPLE       := ""
+	BLUE         := ""
+	WHITE        := ""
+	RESET        := ""
+endif
+
 ## help	:	Print commands help.
 .PHONY: help
 ifneq (,$(wildcard docker.mk))
@@ -15,11 +38,18 @@ help : Makefile
 	@sed -n 's/^##//p' $<
 endif
 
-## up	:	Start up containers.
+## up	:	Start up all containers and processes.
 .PHONY: up
 up:
-	@echo "Starting up container for $(PROJECT_NAME)"
-	docker compose up -d --remove-orphans
+	@echo "Composing up containers for $(PROJECT_NAME)"
+	@docker compose up -d --remove-orphans
+	@if [ "$(shell .docker/test-connection.sh ${NESTJS_HOST_PROTOCOL}://localhost:${NESTJS_APPLICATION_PORT})" != "true" ] ; then echo "${BLUE}Starting NestJS service, this may take a little while...${RESET}"; make start nestjs > /dev/null 2>&1; fi
+	@if [ "$(shell .docker/test-connection.sh ${REACT_HOST_PROTOCOL}://localhost:${REACT_PORT})" != "true" ] ; then echo "${BLUE}Starting React service, this may take a little while...${RESET}"; make start react > /dev/null 2>&1; fi
+	@.docker/wait-until.sh 'curl --insecure --connect-timeout 2 -s -D - ${NESTJS_HOST_PROTOCOL}://localhost:${NESTJS_APPLICATION_PORT} -o /dev/null 2>/dev/null | head -n1 | grep 200' ${MAX_STARTUP_WAIT} > /dev/null 2>&1
+	@echo "${BLUE}NestJS hot reload server up. See files under directory ${WHITE}server${RESET}"
+	@.docker/wait-until.sh 'curl --insecure --connect-timeout 2 -s -D - ${REACT_HOST_PROTOCOL}://localhost:${REACT_PORT} -o /dev/null 2>/dev/null | head -n1 | grep 200' ${MAX_STARTUP_WAIT} > /dev/null 2>&1
+	@echo "${BLUE}React hot reload dev environment. See files under directory ${WHITE}client${RESET}"
+	@echo "Containers are up, services are started. Go to ${BLUE}${REACT_HOST_PROTOCOL}://${REACT_HOST}${RESET}"
 
 ## start	:	Start processes (must be defined in variable SERVICE_param where param comes after start)
 .PHONY: start
@@ -54,7 +84,6 @@ shell:
 
 ## exec	:	Executes shell commands on a specified container in the working directory
 ##		For example: make exec nestjs "npm install --save-dev @some/package"
-
 .PHONY: exec
 exec:
 	$(eval SERVICE=$(word 2,$(MAKECMDGOALS)))

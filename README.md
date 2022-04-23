@@ -3,8 +3,8 @@
 Minimum asset boilerplate for integrating several technologies together into a functional development environment. The installation instructions below will result in the following:
 
 1. An EdgeDB server running in the `edgedb` container
-2. A NextJS server (in hot reload mode) running in the `nestjs` container, configured to connect via http to the EdgeDB server, and exposing various REST endpoints through the http://nestjs.docker.localhost url.
-3. A React hot reload development environment running in the `react` container, configured to connect via http to the NextJS REST endpoints, and exposing a sample web app running at http://react.docker.localhost, which can be used to execute arbitrary EdgeQL queries as well as the query the results.
+2. A NestJS server (in hot reload mode) running in the `nestjs` container, configured to connect via http to the EdgeDB server, and exposing various REST endpoints through the http://nestjs.docker.localhost url.
+3. A React hot reload development environment running in the `react` container, configured to connect via http to the NestJS REST endpoints, and exposing a sample web app running at http://react.docker.localhost, which can be used to execute arbitrary EdgeQL queries as well as the query the results.
 
 A fourth Docker container, a `reverse-proxy` container, is also employed to ensure urls that satisfy browser CORS requirements.
 
@@ -23,40 +23,22 @@ Note that this has only been tested on Ubuntu 18.0.4.
     git clone git@github.com:deangelisbd/nestjs-edgedb-test-1
     ```
 
-1. Start up the NestJS and EdgeDB docker containers (server) and the React docker container (client)
+1. Start up the all the Docker containers, including EdgeDB, NestJS, React and Reverse Proxy.
 
     ```bash
     $ make up
     ```
     You may see <span style="color:red">⠿ react Error</span> or <span style="color:red">⠿ nestjs Error</span> at first, but you can ignore. Additionally, in the EdgeDB logs,  you may see errors from the EdgeDB container such as `Exception occurred: the database system is shutting down`, but these too can be ignored.
 
-2. Start the NestJS server
+    This step can take several minutes on a new installation. The startup waits for certain network endpoints to be available before showing success, up to a maximum wait time which is configurable in the `.env` file. If the max wait time is exceeded, you may get a message that looks like failure, but it could just mean services are still starting up.
 
-    ```bash
-    $ make start nestjs
-    ```
-    Note that in a new container, this step takes several seconds up to a minute the first time. An indicator that the server is up and running is the creation of the `node_modules` and `dist` directories. This is where the `npm install` scripts run on the container place all the dependency modules. There may be some logging to the console after running this, but you can ignore and get access back to the prompt by starting to type again.
-
-3. Start the React development environment
-
-    ```bash
-    $ make start react
-    ```
-    Note that in a new container, this step takes several seconds up to a minute the first time.
-
-4. To view the NestJS or React or EdgeDB logs in order to debug errors use
+3. To view the NestJS or React or EdgeDB logs in order to debug errors use
 
     ```bash
     $ make logs [ nestjs | react | edgedb ]
     ```
 
-5. To stop all the containers
-
-    ```bash
-    $ make stop
-    ```
-
-6.  Add data to DB if not already populated.
+4.  Add data to DB if not already populated.
     If you have the EdgeDB CLI installed locally, then run:
     ```bash
     $ edgedb --dsn=edgedb://edgedb@localhost:5656/edgedb --tls-security=insecure
@@ -121,7 +103,7 @@ Note that this has only been tested on Ubuntu 18.0.4.
     edgedb> \exit
     ```
 
-6. Now to go to http://react.docker.localhost. In the field that reads "Enter EdgeQL", enter the query:
+5. Now to go to http://react.docker.localhost. In the field that reads "Enter EdgeQL", enter the query:
 
     ```
     select Movie { title, year };
@@ -133,6 +115,11 @@ Note that this has only been tested on Ubuntu 18.0.4.
     [{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
     ```
 
+Note: to stop all the containers
+
+    ```bash
+    $ make stop
+    ```
 
 # Following is standard NestJS info
 

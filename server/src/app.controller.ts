@@ -7,6 +7,11 @@ export class AppController {
 
   constructor(private readonly appService: AppService) {}
 
+  @Get('/')
+  public async alive(@Req() req:Request, @Res() res:Response) {
+    res.send('OK')
+  }    
+
   @Get('/edge')
   public async edgeQuery(@Req() req:Request, @Res() res:Response) {
     const query:string = req.query.query.toString()

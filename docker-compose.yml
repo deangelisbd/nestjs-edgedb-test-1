@@ -56,6 +56,7 @@ services:
       - traefik.http.routers.react.rule=Host(`${REACT_HOST}`)
       - traefik.http.services.react.loadbalancer.server.port=${REACT_PORT}
   reverse-proxy:
+    container_name: ${PROJECT_NAME}_reverse-proxy
     image: traefik:v2.6
     command: --api.insecure=true --providers.docker
     ports:
