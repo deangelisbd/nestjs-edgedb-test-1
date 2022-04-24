@@ -10,7 +10,7 @@ function App() {
   const [edgeQLQueryResult, setEdgeQLQueryResult] = useState('')
 
   const executeEdgeQLQuery = () => {
-    axiosClient.get((process.env.REACT_APP_NESTJS_EDGEQL_QUERY_ENDPOINT || '/') + '?query=' + edgeQLQueryString)
+    axiosClient.get((process.env.REACT_APP_NESTJS_EDGEQL_QUERY_ENDPOINT || '/') + '?query=' + encodeURIComponent(edgeQLQueryString))
                 .then((res) => {
                   setEdgeQLQueryResult(JSON.stringify(res.data))
                 })
