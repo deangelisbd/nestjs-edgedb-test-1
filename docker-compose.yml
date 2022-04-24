@@ -3,10 +3,9 @@ version: '3.8'
 services:
   nestjs:
     container_name: ${PROJECT_NAME}_nestjs
-    image: nestjs/nestjs
-    build:
-      context: .
-      dockerfile: ./Dockerfile_nestjs_dev
+    image: node:17.9-alpine3.14
+    working_dir: /usr/src/app
+    command: tail -f /dev/null
     environment:
       - NESTJS_APPLICATION_PORT=${NESTJS_APPLICATION_PORT}
       - EDGE_PORT=${EDGE_PORT}
@@ -21,6 +20,7 @@ services:
       - ${NESTJS_DEBUGGING_PORT}:${NESTJS_DEBUGGING_PORT}
     volumes:
       - ./server:/usr/src/app/
+      - .docker/startNestJSServer.sh:/usr/src/startNestJSServer.sh
     labels:
       - traefik.http.routers.nestjs.rule=Host(`${NESTJS_HOST}`)
       - traefik.http.services.nestjs.loadbalancer.server.port=${NESTJS_APPLICATION_PORT}
@@ -38,10 +38,9 @@ services:
       - ./server/credentials:/root/.config/edgedb/credentials
   react:
     container_name: ${PROJECT_NAME}_react
-    image: react/react
-    build:
-      context: .
-      dockerfile: ./Dockerfile_react_dev
+    image: node:17.9-alpine3.14
+    working_dir: /usr/src/app
+    command: tail -f /dev/null
     environment:
       - PORT=${REACT_PORT}
       - REACT_APP_NESTJS_BASE_URL=${NESTJS_HOST_PROTOCOL}://${NESTJS_HOST}
@@ -52,6 +51,7 @@ services:
       - ${REACT_PORT}:${REACT_PORT}
     volumes:
       - ./client:/usr/src/app/
+      - .docker/startReactServer.sh:/usr/src/startReactServer.sh
     labels:
       - traefik.http.routers.react.rule=Host(`${REACT_HOST}`)
       - traefik.http.services.react.loadbalancer.server.port=${REACT_PORT}
