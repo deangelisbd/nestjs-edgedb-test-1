@@ -28,9 +28,10 @@
   color: #61dafb;
 }
 
-pre {
-  font-size: 10px !important;
+.pretty-json-container {
+  font-size: 11px !important;
   line-height: 1.1em;
+  letter-spacing: 0 !important;
 }
 
 @keyframes App-logo-spin {

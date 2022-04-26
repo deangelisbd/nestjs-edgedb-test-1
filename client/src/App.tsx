@@ -5,6 +5,7 @@ import { Input, PageHeader, Button,Card } from 'antd';
 import axios from 'axios';
 import { AxiosInstance } from 'axios'
 import { SchemaCanvas } from './SchemaCanvas/SchemaCanvas'
+import ReactJson from 'react-json-view'
 
 export type Client = {
   client: AxiosInstance
@@ -13,7 +14,7 @@ export type Client = {
 function App() {
 
   const [edgeQLQueryString, setEdgeQLQueryString] = useState('')
-  const [edgeQLQueryResult, setEdgeQLQueryResult] = useState('')
+  const [edgeQLQueryResult, setEdgeQLQueryResult] = useState<object>([])
 
   const axiosClient = axios.create({
     baseURL: process.env.REACT_APP_NESTJS_BASE_URL,
@@ -37,7 +38,7 @@ function App() {
   const executeEdgeQLQuery = () => {
     axiosClient.get((process.env.REACT_APP_NESTJS_EDGEQL_QUERY_ENDPOINT || '/') + '?query=' + encodeURIComponent(edgeQLQueryString))
                 .then((res) => {
-                  setEdgeQLQueryResult(JSON.stringify(res.data,null,2))
+                  setEdgeQLQueryResult(res.data)
                 })
     
   }
@@ -54,7 +55,7 @@ function App() {
       />
       <Input placeholder="Enter EdgeQL" style={{ width:'250px', display:'inline-block' }} onChange={(e) => setEdgeQLQueryString(e.target.value)}/> 
       <Button onClick={executeEdgeQLQuery}>Execute</Button>
-      <Card><pre>{ edgeQLQueryResult }</pre></Card>
+      <Card><ReactJson quotesOnKeys={ false } enableClipboard={ false } collapsed={ 0 } name="result" src={ edgeQLQueryResult } /></Card>
       <SchemaCanvas {...schemaCanvasProps}></SchemaCanvas>
     </div>
   );
