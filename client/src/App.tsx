@@ -56,7 +56,7 @@ function App() {
       <Input placeholder="Enter EdgeQL" style={{ width:'250px', display:'inline-block' }} onChange={(e) => setEdgeQLQueryString(e.target.value)}/> 
       <Button onClick={executeEdgeQLQuery}>Execute</Button>
       <Card><ReactJson quotesOnKeys={ false } enableClipboard={ false } collapsed={ 0 } name="result" src={ edgeQLQueryResult } /></Card>
-      <SchemaCanvas {...schemaCanvasProps}></SchemaCanvas>
+      <Card><SchemaCanvas {...schemaCanvasProps}></SchemaCanvas></Card>
     </div>
   );
 
