@@ -5,6 +5,7 @@ import { Input, PageHeader, Button,Card } from 'antd';
 import axios from 'axios';
 import { AxiosInstance } from 'axios'
 import { SchemaCanvas } from './SchemaCanvas/SchemaCanvas'
+import CodeEditor from '@uiw/react-textarea-code-editor'
 import ReactJson from 'react-json-view'
 
 export type Client = {
@@ -53,7 +54,19 @@ function App() {
         className="site-page-header"
         title="Edge Query Builder"
       />
-      <Input placeholder="Enter EdgeQL" style={{ width:'250px', display:'inline-block' }} onChange={(e) => setEdgeQLQueryString(e.target.value)}/> 
+      {/* <Input placeholder="Enter EdgeQL" style={{ width:'250px', display:'inline-block' }} onChange={(e) => setEdgeQLQueryString(e.target.value)}/>  */}
+      <CodeEditor
+        value={ '' }
+        language='graphql'
+        placeholder='Please enter EdgeQL'
+        onChange={(e) => setEdgeQLQueryString(e.target.value)}
+        padding={15}
+        style={{
+          fontSize: 12,
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+        }}
+      />
       <Button onClick={executeEdgeQLQuery}>Execute</Button>
       <Card><ReactJson quotesOnKeys={ false } enableClipboard={ false } collapsed={ 0 } name="result" src={ edgeQLQueryResult } /></Card>
       <Card><SchemaCanvas {...schemaCanvasProps}></SchemaCanvas></Card>
