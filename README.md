@@ -38,7 +38,7 @@ Note that this has only been tested on Ubuntu 18.0.4.
     $ make logs [ nestjs | react | edgedb ]
     ```
 
-4.  Add data to DB if not already populated.
+4.  Add data to DB if not already populated. This repo includes a basic Person-Movie schema corresponding to the [EdgeDB Quickstart guide](https://www.edgedb.com/docs/guides/quickstart#ref-quickstart-createdb-sdl)
     If you have the EdgeDB CLI installed locally, then run:
     ```bash
     $ edgedb --dsn=edgedb://edgedb@localhost:5656/edgedb --tls-security=insecure
@@ -50,52 +50,7 @@ Note that this has only been tested on Ubuntu 18.0.4.
     $ edgedb -I local_dev
     ```
 
-    Then in the edgedb CLI, do stuff like this (when copying and pasting, ignore the `edgedb>` prompts and replies):
-    ```bash
-    edgedb> insert Person {
-      first_name := 'Denis',
-      last_name := 'Villeneuve',
-    };
-    {default::Person {id: <person-id>}}
-
-    edgedb> with director_id := <uuid>$director_id
-    insert Movie {
-      title := 'Blade Runnr 2049',
-      year := 2017,
-      director := (
-        select Person
-        filter .id = director_id
-      ),
-      actors := {
-        (insert Person {
-          first_name := 'Harrison',
-          last_name := 'Ford',
-        }),
-        (insert Person {
-          first_name := 'Ana',
-          last_name := 'de Armas',
-        }),
-      }
-    };
-    Parameter <uuid>$director_id: # Enter <person-id> From previous query at prompt here
-    {default::Movie {id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}
-
-    edgedb> update Movie
-    filter .title = 'Blade Runnr 2049'
-    set {
-      title := "Blade Runner 2049",
-      actors += (
-        insert Person {
-          first_name := "Ryan",
-          last_name := "Gosling"
-        }
-      )
-    };
-    {default::Movie {id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}
-
-    edgedb> insert Movie { title := "Dune" };
-    {default::Movie {id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}}
-    ```
+    Then in the edgedb CLI (prompts like `edgedb>`), insert some objects as demonstrated in the [EdgeDB Quickstart guide](https://www.edgedb.com/docs/guides/quickstart#ref-quickstart-insert-data).
 
     To exit the EdgeDB CLI, enter:
 
@@ -109,7 +64,7 @@ Note that this has only been tested on Ubuntu 18.0.4.
     select Movie { title, year };
     ```
 
-    And then press the "Execute" button. You should see the JSON result appear below the query:
+    And then press the "Execute" button. You should see the JSON result appear below the query, if you inserted objects in the previous step:
     
     ```
     [{"title":"Blade Runner 2049","year":2017},{"title":"Dune","year":null}]
