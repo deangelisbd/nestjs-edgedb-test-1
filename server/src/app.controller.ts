@@ -17,6 +17,9 @@ export class AppController {
     const query:string = req.query.query.toString()
     await this.appService.edgeQL(query).then((value) => {
       res.json(value)
+    }, (reason) => {
+      console.log(reason)
+      res.status(500).json( { message: reason.toString() } )
     })
   }    
 }

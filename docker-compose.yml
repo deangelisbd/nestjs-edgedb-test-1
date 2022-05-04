@@ -8,9 +8,10 @@ services:
     command: tail -f /dev/null
     environment:
       - NESTJS_APPLICATION_PORT=${NESTJS_APPLICATION_PORT}
-      - EDGE_PORT=${EDGE_PORT}
       - EDGE_USER=${EDGE_USER}
+      - EDGE_PASSWORD=${EDGE_PASSWORD}
       - EDGE_HOST=${EDGE_HOST}
+      - EDGE_PORT=${EDGE_PORT}
       - EDGE_DB=${EDGE_DB}
       - ALLOWED_CORS_SUBDOMAINS=${NESTJS_ALLOWED_CORS_SUBDOMAINS}
     depends_on:
@@ -30,6 +31,10 @@ services:
     hostname: ${EDGE_HOST}
     environment:
       - EDGEDB_SERVER_SECURITY=insecure_dev_mode
+#      - EDGEDB_SERVER_TLS_CERT_MODE=generate_self_signed
+      - EDGEDB_SERVER_USER=${EDGE_USER}
+      - EDGEDB_SERVER_PASSWORD=${EDGE_PASSWORD}
+      - EDGEDB_SERVER_DATABASE​=${EDGE_DB}
     ports:
       - ${EDGE_PORT}:${EDGE_PORT} 
     volumes:

@@ -9,7 +9,7 @@ export class AppService {
 
   async edgeQL(query: string) {
     const client = edgedb.createClient({
-      dsn: 'edgedb://' + this.configService.get('EDGE_USER') + '@' + this.configService.get('EDGE_HOST') + ':' + this.configService.get('EDGE_PORT') + '/' + this.configService.get('EDGE_DB') + '?tls_security=insecure'
+      dsn: 'edgedb://' + this.configService.get('EDGE_USER') + ':' + this.configService.get('EDGE_PASSWORD') + '@' + this.configService.get('EDGE_HOST') + ':' + this.configService.get('EDGE_PORT') + '/' + this.configService.get('EDGE_DB') + '?tls_security=insecure'
     });
     const result = await client.query(query)
     return result;
